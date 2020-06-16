@@ -1,19 +1,25 @@
 var express = require('express');
-var router = express.Router();
+const Router = require('express-promise-router');
+const router = new Router();
+const { Pool } = require('pg');
+let pool;
+const env = process.env;
 
-/*
-id:
-title:
-completed:
-created_at:
-*/
-router.get('/', function(req, res, next) {
-  const tasks = {
-    id: 1,
-    title: "沼田家",
-    completed: false,
-    created_at: 1591790280
-  }
+function init() {
+  pool = new Pool({
+    user: env.PGUSER,
+    host: env.PGHOST,
+    database: env.PGDB,
+    password: env.PGPW,
+    port: 5432
+  });
+}
+router.get('/', async (req, res, next) => {
+  init();
+  let tasks
+  await pool.query('select * from public.tasks')
+            .then(res => tasks = res.rows[0]);
+
   res.send(tasks);
 });
 
