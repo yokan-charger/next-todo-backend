@@ -15,7 +15,10 @@ const pool = new Pool({
 router.get('/', async (req, res, next) => {
   let tasks
   await pool.query('select * from public.tasks')
-            .then(res => tasks = res.rows[0]);
+            .then(res => tasks = res.rows);
+  console.log("=======")
+  console.log(tasks)
+  console.log("=======")
   res.send(tasks);
 });
 
