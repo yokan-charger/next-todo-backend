@@ -24,10 +24,11 @@ router.post('/', async (req, res) => {
   let date = new Date();
   await pool.query("insert into public.tasks(title, completed, created_at) values($1, $2, $3) returning id, title, completed, created_at", [req.body.title, false, Math.floor(date.getTime() / 1000)])
             .then(res => task = res.rows[0]);
-  console.log("========")
-  console.log(task)
-  console.log("========")
   res.send(task)
 })
 
+router.delete('/', async (req, res) => {
+  await pool.query("delete from public.tasks where id = $1", [req.query.id])
+  res.status(200).send("Hoge")
+})
 module.exports = router;
