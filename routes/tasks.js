@@ -31,4 +31,14 @@ router.delete('/', async (req, res) => {
   await pool.query("delete from public.tasks where id = $1", [req.query.id])
   res.status(200).send("Hoge")
 })
+
+router.put('/status', async (req, res) => {
+  await pool.query("update public.tasks set completed = $1 where id = $2", [req.body.completed, req.body.id])
+  res.status(200).send("Hoge")
+})
+
+router.put('/title', async (req, res) => {
+  await pool.query("update public.tasks set title = $1 where id = $2", [req.body.title, req.body.id])
+  res.status(200).send("Hoge")
+})
 module.exports = router;
