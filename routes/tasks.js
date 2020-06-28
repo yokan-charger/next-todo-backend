@@ -14,7 +14,7 @@ const pool = new Pool({
 
 router.get('/', async (req, res, next) => {
   let tasks
-  await pool.query('select * from public.tasks')
+  await pool.query('select * from public.tasks order by created_at')
             .then(res => tasks = res.rows);
   res.send(tasks);
 });
