@@ -15,7 +15,7 @@ const pool = new Pool({
 router.get('/', async (req, res, next) => {
   let tasks
   let statusCode
-  await pool.query('select * from public.tasks order by created_at')
+  await pool.query('select * from public.tasks join users on users.id = tasks.user_id where users.email = $1 order by tasks.created_at', [req.query.email])
             .then(res => {
               tasks = res.rows
               statusCode = 200
@@ -27,7 +27,13 @@ router.post('/', async (req, res) => {
   let task
   let date = new Date();
   let statusCode
-  await pool.query("insert into public.tasks(title, completed, created_at) values($1, $2, $3) returning id, title, completed, created_at", [req.body.title, false, Math.floor(date.getTime() / 1000)])
+  let user
+  await pool.query("select * from users where users.email = $1", [req.body.email])
+            .then(res => {
+              user = res.rows[0]
+            }).catch(err => console.log('user not found'))
+
+  await pool.query("insert into public.tasks(title, completed, created_at, user_id) values($1, $2, $3, $4) returning id, title, completed, created_at", [req.body.title, false, Math.floor(date.getTime() / 1000), user.id])
             .then(res => {
               task = res.rows[0]
               statusCode = 200
